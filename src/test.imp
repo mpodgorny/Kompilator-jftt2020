@@ -1,8 +1,15 @@
 DECLARE
-	a, b
+	a, b, c
 BEGIN
-	FOR i FROM 1 TO 5 DO
-		a ASSIGN 5;
-		WRITE a;
-	ENDFOR
+	READ a;
+	READ b;
+	c ASSIGN a DIV a;
+	WRITE c;
+	c ASSIGN a DIV b;
+	WRITE c;
+	c ASSIGN a MOD a;
+	WRITE c;
+	c ASSIGN a MOD b;
+	WRITE c;
 END
+

@@ -3,6 +3,8 @@
 #include <string>
 #include "logic.hpp"
 #include "operations.hpp"
+#include "loops.hpp"
+#include "conditions.hpp"
 
 int yylex();
 int yyparse();
@@ -62,22 +64,28 @@ commands:       commands command
 ;
 
 
-command:        identifier  ASSIGN expression';'                                        {std::cout<<"ASSIGN\n";  assign($1, yylineno); }
+command:        identifier  ASSIGN expression';'                                        {assign($1, yylineno);                  }
 
-                | IF condition THEN commands                                            { }                   
-                  ELSE commands ENDIF                                                   { }               
+                | IF condition THEN commands                                            { if_else_loop(yylineno);               }                  
+                        ELSE commands ENDIF                                             { add_else(yylineno);                   }               
 
-                | IF condition THEN commands ENDIF                                      { }             
+                | IF condition THEN                                  
+                        commands ENDIF                                                  { if_loop(yylineno);}             
 
-                | WHILE condition DO commands ENDWHILE                                  { }    
+                | WHILE  condition                                                      { loop_while(yylineno);                 }
+                        DO commands ENDWHILE                                            { end_loop_while(yylineno);             }           
 
-                | DO commands WHILE condition ENDDO                                     { }
-                | FOR pidentifier FROM value TO value DO commands ENDFOR                {std::cout<<"FOR\n"; }
+                | DO                                                                    { begin_do_while(yylineno);             }
+                    commands WHILE condition ENDDO                                      { end_do_while(yylineno);               }
 
-                | FOR pidentifier FROM value DOWNTO value DO commands ENDFOR            { }
+                | FOR pidentifier FROM value TO value                                   { loop_for($2, $4, $6, false, yylineno);}
+                        DO commands ENDFOR                                              { end_loop_for(yylineno);               }
 
-                | READ identifier';'                                                    { std::cout<<"read: "<<$2<<std::endl; read($2);    }
-                | WRITE value';'                                                        { std::cout<<"write: "<<$2<<std::endl; write($2);   }
+                | FOR pidentifier FROM value DOWNTO value                               { loop_for($2, $4, $6, true, yylineno); }
+                        DO commands ENDFOR                                              { end_loop_for(yylineno);               }
+
+                | READ identifier';'                                                    { read($2);   }
+                | WRITE value';'                                                        { write($2);  }
 ;
 
 expression:     value                                                                   { }
@@ -88,19 +96,19 @@ expression:     value                                                           
                 | value MOD value                                                       { mod($1, $3, yylineno); }
 ;
 
-condition:      value EQ value                                                          { }
-                | value NEQ value                                                       { }
-                | value LE value                                                        { }
-                | value GE value                                                        { }
-                | value LEQ value                                                       { }
-                | value GEQ value                                                       { }
+condition:      value EQ value                                                          { exp_eq($1, $3, yylineno);     }
+                | value NEQ value                                                       { exp_neq($1, $3, yylineno);    }
+                | value LE value                                                        { exp_le($1, $3, yylineno);     }
+                | value GE value                                                        { exp_ge($1, $3, yylineno);     }
+                | value LEQ value                                                       { exp_leq($1, $3, yylineno);    }
+                | value GEQ value                                                       { exp_geq($1, $3, yylineno);    }
 ;
 
-value:          num                                                                     {std::cout<<"VAL\n";  value_num($1, yylineno); }
-                | identifier                                                             
+value:          num                                                                     {value_num($1, yylineno);       }
+                | identifier                                                            
 ;
 
-identifier:     pidentifier                                                             {identifier_pid($1, yylineno);}
+identifier:     pidentifier                                                             {identifier_pid($1, yylineno);         }
                 | pidentifier '(' pidentifier ')'                                       {identifier_pid_pid($1, $3, yylineno); }
                 | pidentifier '(' num ')'                                               {identifier_pid_num($1, $3, yylineno); }
 ;
@@ -110,7 +118,15 @@ identifier:     pidentifier                                                     
 
 
 int main(int argc, char* argv[]) {
-        std::cout << "\tCompiler by me\n------------Compiling------------" << std::endl;
+        
+                                     
+                std::cout<<"\t|/  _  ._ _  ._  o |  _. _|_  _  ._ "<<std::endl;
+                std::cout<<"\t|\\ (_) | | | |_) | | (_|  |_ (_) |  "<<std::endl;
+                std::cout<<"\t             |                       "<<std::endl;
+
+
+        std::cout << "\t\t\033[;36m By Michał Podgórny" << std::endl;
+        std::cout<< "\t\033[;32m------------Compiling------------" << std::endl;
         if(argc != 3)
                 std::cout<<"Usage: ./compiler <input_file> <output.file>\nAborting...";
         
@@ -120,7 +136,7 @@ int main(int argc, char* argv[]) {
                 std::cout<<"Given input fie was not found.\nAborting...";
         
         yyparse();
-        std::cout<<"------------Probably succes xd------------\n";
+        std::cout<<"\t \033[;36m------------SUCCES------------\n\033[;0m";
         save_to_file(argv[2]);
         return 0;
 

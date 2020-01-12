@@ -3,8 +3,11 @@ FLAGS = -std=c++17
 
 all: compiler
 
-compiler: parser.o lexer.o logic.o operations.o conditions.o
-	$(CC) $(FLAGS) -o compiler parser.o lexer.o logic.o operations.o conditions.o
+compiler: parser.o lexer.o logic.o operations.o conditions.o loops.o
+	$(CC) $(FLAGS) -o compiler parser.o lexer.o logic.o operations.o conditions.o loops.o
+
+loops.o: loops.cpp
+	$(CC) $(FLAGS) -c loops.cpp
 
 conditions.o: conditions.cpp
 	$(CC) $(FLAGS) -c conditions.cpp

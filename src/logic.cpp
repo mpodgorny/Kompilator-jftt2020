@@ -1,7 +1,7 @@
 #include "logic.hpp"
 using namespace std;
 
-std::vector<string> code; 
+vector<string> code; 
 map<string, var> variables;
 map<int, long long int> consts;
 
@@ -11,7 +11,7 @@ var last_var;
 
 bool reg1_taken = false;
 
-long long int free_mem_idx=3;
+long long int free_mem_idx=4;
 
 // TYPES: single, array, iterator
 
@@ -42,11 +42,11 @@ void assign(char* name, int line){
     if (searched.type == "iterator")
         error("no loop iterators modification allowed", line);
     if (searched.initialized==true){
-        add_code("STORE", searched.mem_addr);
+        add_code("STORE", searched.mem_addr, " #assigning");
     }else{
         searched.initialized = true;
         searched.mem_addr=free_mem_idx;
-        add_code("STORE", searched.mem_addr);
+        add_code("STORE", searched.mem_addr, " #assigning");
         free_mem_idx++;
     }
 }
@@ -61,7 +61,7 @@ void read(char* name){
 
 void write(char* name){
     var searched = variables.at(name);
-    add_code("LOAD", searched.mem_addr);
+    add_code("LOAD", searched.mem_addr, " #WRITE");
     add_code("PUT");
 }
 
@@ -124,6 +124,13 @@ void add_code(string snip, long long int val) {
     k++;
     string temp;
     temp = snip + " " + to_string(val);
+    code.push_back(temp);
+}
+
+void add_code(string snip, long long int val, string comment) {
+    k++;
+    string temp;
+    temp = snip + " " + to_string(val)+comment;
     code.push_back(temp);
 }
 

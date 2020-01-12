@@ -1,3 +1,6 @@
+#ifndef _LOGICHPP_
+#define _LOGICHPP_
+
 #include <iostream>
 #include <string>
 #include <memory>
@@ -11,6 +14,7 @@ using namespace std;
 struct var {
     string name;
     string type;
+    long long int value;
     long long int mem_addr;
 	bool initialized;
 	long long int begin;
@@ -20,6 +24,7 @@ struct var {
 extern map<string, var> variables;
 extern long long int free_mem_idx;
 extern long long int k;
+extern vector<string> code;
 
 void declaration(char* identifier, int line);
 
@@ -44,8 +49,12 @@ void add_code(string snip);
 
 void add_code(string snip, long long int val);
 
+void add_code(string snip, long long int val, string comment);
+
 void save_to_file(char* out);
 
 void error(string msg, int line);
 
 void end();
+
+#endif
