@@ -1,0 +1,8 @@
+DECLARE
+	a, b
+BEGIN
+	FOR i FROM 1 TO 5 DO
+		a ASSIGN 5;
+		WRITE a;
+	ENDFOR
+END
