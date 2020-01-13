@@ -1,13 +1,16 @@
 #include "logic.hpp"
+#include<stack>
 using namespace std;
 
-vector<string> code; 
+vector<string> code;
 map<string, var> variables;
+map<string, var> arrays;
+
+stack<int> indexes;
+
 map<int, long long int> consts;
 
 long long int k=0;
-
-var last_var;
 
 bool reg1_taken = false;
 
@@ -28,7 +31,13 @@ void declaration(char* identifier, char* begining, char* end, int line){
             error("variable already declared, bro", line);
     if(stoll(begining)>stoll(end))
         error("array's end smaller than begining index", line);
-    
+    /*for(int i=stoll(begining) ; i<=stoll(end);i++){
+        var temp;
+        temp.type="single";
+        temp.name=identifier;
+        temp.mem_addr=free_mem_idx++;
+        arrays.insert(make_pair(identifier, temp));
+    }*/
     var temp;
     temp.type="array";
     temp.size= stoll(end) - stoll(begining);
@@ -42,7 +51,7 @@ void assign(char* name, int line){
     if (searched.type == "iterator")
         error("no loop iterators modification allowed", line);
     if (searched.initialized==true){
-        add_code("STORE", searched.mem_addr, " #assigning");
+        add_code("STORE", searched.mem_addr, " # re-assigning");
     }else{
         searched.initialized = true;
         searched.mem_addr=free_mem_idx;
@@ -66,18 +75,7 @@ void write(char* name){
 }
 
 void value_num(char* val, int line){
-    add_code("SUB", 0);
-    if (stoll(val)>0){
-        for(long long int it = 0; it!=stoll(val);it++){
-            add_code("INC");
-
-        }
-    }else {
-        for(long long int it = 0; it!=stoll(val);it--){
-            add_code("DEC");     
-
-        }
-    }
+    generate_number(val);
     if (reg1_taken){
         add_code("STORE", 2);
         var temp;
@@ -93,6 +91,42 @@ void value_num(char* val, int line){
     }
 }
 
+
+void generate_number(char* val){
+    generate_number(stoll(val));
+}
+
+void generate_number(long long int val){
+    if(val>=0){
+        add_code("SUB", 0);
+        if (val < 10) {
+        for (long long int i = 0; i < val; ++i) {
+            add_code("INC");
+        }
+    } else {
+        generate_number(val >> 1);
+        add_code("ADD", 0);
+        if (val % 2 == 1) {
+            add_code("INC");
+        }
+    }
+    } else {
+        add_code("SUB", 0);
+        if (val > -10) {
+        for (long long int i = 0; i < abs(val); ++i) {
+            add_code("DEC");
+        }
+    } else {
+        generate_number(val >> 1);
+        add_code("ADD", 0);
+        if (abs(val) % 2 == 1) {
+            add_code("INC");
+        }
+    }
+    }
+
+}
+
 void identifier_pid(char* name, int line){
     if (variables.find(name) == variables.end())
         error("The variable has not been declared:", line);
@@ -103,6 +137,7 @@ void identifier_pid_pid(char* name, char* idx, int line){
         error("The variable has not been declared:", line);
     if (variables.find(idx) == variables.end())
         error("The variable has not been declared:", line);
+
     //TODO: controling arrays
 }
 

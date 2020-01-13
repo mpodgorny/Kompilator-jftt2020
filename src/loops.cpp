@@ -111,29 +111,44 @@ void end_do_while(int line){
 void if_loop(int line){
     cond_flag flag = cond_flags.top();
     cond_flags.pop();
-    string temp = "LOAD 3\nJNEG " + to_string(k+2) + " #IF JUMP";
-    auto it = code.insert(code.begin()+flag.k_start, temp); 
+    string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +"\nJNEG " + to_string(k+2) + " #IF JUMP";
+    auto it = code.insert(code.begin()+flag.k_start-2, temp); 
     k+=2;
 }
 
 void if_else_loop(int line){
     cond_flag &flag = cond_flags.top();
-    //cond_flags.pop();
-    
-    var boolean;
-    boolean.mem_addr=free_mem_idx++;
-    flag.boolean=boolean;
-    string temp = "LOAD 3\nSTORE " + to_string(boolean.mem_addr) + "\nJNEG " + to_string(k+3) + " #IF_ELSE FIRST JUMP";
+
+    string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +" #IF\nJNEG " + to_string(k+2) + " #IF_ELSE FIRST JUMP";
     auto it = code.insert(code.begin()+flag.k_start, temp); 
-    k+=3;
+    k+=2;
     flag.k_end=k;
-    cout<<"K_START, K_END " <<flag.k_start<<", "<<flag.k_end<<endl;
 }
 
 void add_else(int line){
     cond_flag flag = cond_flags.top();
     cond_flags.pop();
-    string temp="LOAD "+ to_string(flag.boolean.mem_addr) + "\nJPOS " + to_string(k+2) + " #jump if condition was true";
-    auto it = code.insert(code.begin()+flag.k_end-2, temp); 
+    string temp="LOAD "+ to_string(flag.boolean.mem_addr) + " # ELSE\nJPOS " + to_string(k+2) + " #jump if condition was true";
+    auto it = code.insert(code.begin()+flag.k_end-1, temp); 
     k+=2;
 }
+
+/*
+void adjust_loops(int adj){
+    while_loop while_arr[while_loops.size];
+    for_loop for_arr[for_loops.size];
+    int it = 0;
+
+    while(!for_loops.empty){
+        for_loop loop = for_loops.top();
+        for_arr[it++];
+        for_loops.pop();
+    }
+    while(!while_loops.empty){
+        while_loop loop = while_loops.top();
+        while_arr[it++];
+        while_loops.pop();
+    }
+
+}
+*/

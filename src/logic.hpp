@@ -30,7 +30,6 @@ void declaration(char* identifier, int line);
 
 void declaration(char* identifier, char* begining, char* end, int line);
 
-
 void assign(char* name, int line);
 
 void read(char* name);
@@ -38,6 +37,10 @@ void read(char* name);
 void write(char* name);
 
 void value_num(char* val, int line);
+
+void generate_number(char* val);
+
+void generate_number(long long int val);
 
 void identifier_pid(char* name, int line);
 

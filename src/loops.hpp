@@ -21,6 +21,11 @@ struct while_loop{
 
 };
 
+extern stack<for_loop> for_loops;
+extern stack<while_loop> while_loops;
+
+
+
 void loop_for(char* it_name, char* iterator, char* to_value, bool downto, int line);    
 
 void end_loop_for(int line);

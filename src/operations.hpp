@@ -13,3 +13,5 @@ void mul(char* val1, char* val2, int line);
 void div(char* val1, char* val2, int line);
 
 void mod(char* val1, char* val2, int line);
+
+bool is_number(const string& s);

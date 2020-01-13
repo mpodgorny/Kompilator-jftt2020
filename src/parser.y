@@ -23,7 +23,6 @@ const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 }
 
 
-//Tokens
 %start program
 %token DECLARE T_BEGIN END
 %token <pid> IF WHILE DO
@@ -37,12 +36,10 @@ const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 %token <pid> num
 %token ADD
 
-//Types
 %type <pid> value
 %type <pid> identifier
 %type <pid> condition;
 
-//Operators precedence
 %left SUB
 %left MUL DIV MOD
 %%      
