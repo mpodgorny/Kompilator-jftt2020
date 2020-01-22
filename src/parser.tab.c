@@ -70,6 +70,8 @@
 
 #include <iostream>
 #include <string>
+#include <string.h>
+#include <stdio.h>
 #include "logic.hpp"
 #include "operations.hpp"
 #include "loops.hpp"
@@ -85,7 +87,7 @@ const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 
 
 
-#line 89 "parser.tab.c"
+#line 91 "parser.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -164,12 +166,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "parser.y"
+#line 22 "parser.y"
 
     char* pid;
     char* num;
+    char* temp[2];
 
-#line 173 "parser.tab.c"
+#line 176 "parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -1349,221 +1352,227 @@ yyreduce:
   case 2:
 #line 51 "parser.y"
     { end();}
-#line 1353 "parser.tab.c"
+#line 1356 "parser.tab.c"
     break;
 
   case 3:
 #line 52 "parser.y"
     { end();}
-#line 1359 "parser.tab.c"
+#line 1362 "parser.tab.c"
     break;
 
   case 4:
 #line 56 "parser.y"
     { declaration((yyvsp[0].pid), yylineno);           }
-#line 1365 "parser.tab.c"
+#line 1368 "parser.tab.c"
     break;
 
   case 5:
 #line 57 "parser.y"
     { declaration((yyvsp[-5].pid), (yyvsp[-3].pid), (yyvsp[-1].pid), yylineno);   }
-#line 1371 "parser.tab.c"
+#line 1374 "parser.tab.c"
     break;
 
   case 6:
 #line 58 "parser.y"
     { declaration((yyvsp[0].pid), yylineno);           }
-#line 1377 "parser.tab.c"
+#line 1380 "parser.tab.c"
     break;
 
   case 7:
 #line 59 "parser.y"
     { declaration((yyvsp[-5].pid), (yyvsp[-3].pid), (yyvsp[-1].pid), yylineno);   }
-#line 1383 "parser.tab.c"
+#line 1386 "parser.tab.c"
     break;
 
   case 10:
 #line 67 "parser.y"
-    {assign((yyvsp[-3].pid), yylineno);                  }
-#line 1389 "parser.tab.c"
+    { assign((yyvsp[-3].temp), yylineno);                }
+#line 1392 "parser.tab.c"
     break;
 
   case 11:
 #line 69 "parser.y"
     { if_else_loop(yylineno);               }
-#line 1395 "parser.tab.c"
+#line 1398 "parser.tab.c"
     break;
 
   case 12:
 #line 70 "parser.y"
     { add_else(yylineno);                   }
-#line 1401 "parser.tab.c"
+#line 1404 "parser.tab.c"
     break;
 
   case 13:
 #line 73 "parser.y"
     { if_loop(yylineno);}
-#line 1407 "parser.tab.c"
+#line 1410 "parser.tab.c"
     break;
 
   case 14:
 #line 75 "parser.y"
     { loop_while(yylineno);                 }
-#line 1413 "parser.tab.c"
+#line 1416 "parser.tab.c"
     break;
 
   case 15:
 #line 76 "parser.y"
     { end_loop_while(yylineno);             }
-#line 1419 "parser.tab.c"
+#line 1422 "parser.tab.c"
     break;
 
   case 16:
 #line 78 "parser.y"
     { begin_do_while(yylineno);             }
-#line 1425 "parser.tab.c"
+#line 1428 "parser.tab.c"
     break;
 
   case 17:
 #line 79 "parser.y"
     { end_do_while(yylineno);               }
-#line 1431 "parser.tab.c"
+#line 1434 "parser.tab.c"
     break;
 
   case 18:
 #line 81 "parser.y"
-    { loop_for((yyvsp[-4].pid), (yyvsp[-2].pid), (yyvsp[0].pid), false, yylineno);}
-#line 1437 "parser.tab.c"
+    { loop_for((yyvsp[-4].pid), (yyvsp[-2].temp)[0], (yyvsp[0].temp)[0], false, yylineno);}
+#line 1440 "parser.tab.c"
     break;
 
   case 19:
 #line 82 "parser.y"
     { end_loop_for(yylineno);               }
-#line 1443 "parser.tab.c"
+#line 1446 "parser.tab.c"
     break;
 
   case 20:
 #line 84 "parser.y"
-    { loop_for((yyvsp[-4].pid), (yyvsp[-2].pid), (yyvsp[0].pid), true, yylineno); }
-#line 1449 "parser.tab.c"
+    { loop_for((yyvsp[-4].pid), (yyvsp[-2].temp)[0], (yyvsp[0].temp)[0], true, yylineno); }
+#line 1452 "parser.tab.c"
     break;
 
   case 21:
 #line 85 "parser.y"
     { end_loop_for(yylineno);               }
-#line 1455 "parser.tab.c"
+#line 1458 "parser.tab.c"
     break;
 
   case 22:
 #line 87 "parser.y"
-    { read((yyvsp[-1].pid));   }
-#line 1461 "parser.tab.c"
+    { read((yyvsp[-1].temp));   }
+#line 1464 "parser.tab.c"
     break;
 
   case 23:
 #line 88 "parser.y"
-    { write((yyvsp[-1].pid));  }
-#line 1467 "parser.tab.c"
+    { write((yyvsp[-1].temp));  }
+#line 1470 "parser.tab.c"
     break;
 
   case 24:
 #line 91 "parser.y"
-    { }
-#line 1473 "parser.tab.c"
+    { load_single_value((yyvsp[0].temp)); }
+#line 1476 "parser.tab.c"
     break;
 
   case 25:
 #line 92 "parser.y"
-    { add((yyvsp[-2].pid), (yyvsp[0].pid), yylineno); }
-#line 1479 "parser.tab.c"
+    { add((yyvsp[-2].temp), (yyvsp[0].temp), yylineno); }
+#line 1482 "parser.tab.c"
     break;
 
   case 26:
 #line 93 "parser.y"
-    { sub((yyvsp[-2].pid), (yyvsp[0].pid), yylineno); }
-#line 1485 "parser.tab.c"
+    { sub((yyvsp[-2].temp), (yyvsp[0].temp), yylineno); }
+#line 1488 "parser.tab.c"
     break;
 
   case 27:
 #line 94 "parser.y"
-    { mul((yyvsp[-2].pid), (yyvsp[0].pid), yylineno); }
-#line 1491 "parser.tab.c"
+    { mul((yyvsp[-2].temp), (yyvsp[0].temp), yylineno); }
+#line 1494 "parser.tab.c"
     break;
 
   case 28:
 #line 95 "parser.y"
-    { div((yyvsp[-2].pid), (yyvsp[0].pid), yylineno); }
-#line 1497 "parser.tab.c"
+    { div((yyvsp[-2].temp), (yyvsp[0].temp), yylineno); }
+#line 1500 "parser.tab.c"
     break;
 
   case 29:
 #line 96 "parser.y"
-    { mod((yyvsp[-2].pid), (yyvsp[0].pid), yylineno); }
-#line 1503 "parser.tab.c"
+    { mod((yyvsp[-2].temp), (yyvsp[0].temp), yylineno); }
+#line 1506 "parser.tab.c"
     break;
 
   case 30:
 #line 99 "parser.y"
-    { exp_eq((yyvsp[-2].pid), (yyvsp[0].pid), yylineno);     }
-#line 1509 "parser.tab.c"
+    { exp_eq((yyvsp[-2].temp), (yyvsp[0].temp), yylineno);     }
+#line 1512 "parser.tab.c"
     break;
 
   case 31:
 #line 100 "parser.y"
-    { exp_neq((yyvsp[-2].pid), (yyvsp[0].pid), yylineno);    }
-#line 1515 "parser.tab.c"
+    { exp_neq((yyvsp[-2].temp), (yyvsp[0].temp), yylineno);    }
+#line 1518 "parser.tab.c"
     break;
 
   case 32:
 #line 101 "parser.y"
-    { exp_le((yyvsp[-2].pid), (yyvsp[0].pid), yylineno);     }
-#line 1521 "parser.tab.c"
+    { exp_le((yyvsp[-2].temp), (yyvsp[0].temp), yylineno);     }
+#line 1524 "parser.tab.c"
     break;
 
   case 33:
 #line 102 "parser.y"
-    { exp_ge((yyvsp[-2].pid), (yyvsp[0].pid), yylineno);     }
-#line 1527 "parser.tab.c"
+    { exp_ge((yyvsp[-2].temp), (yyvsp[0].temp), yylineno);     }
+#line 1530 "parser.tab.c"
     break;
 
   case 34:
 #line 103 "parser.y"
-    { exp_leq((yyvsp[-2].pid), (yyvsp[0].pid), yylineno);    }
-#line 1533 "parser.tab.c"
+    { exp_leq((yyvsp[-2].temp), (yyvsp[0].temp), yylineno);    }
+#line 1536 "parser.tab.c"
     break;
 
   case 35:
 #line 104 "parser.y"
-    { exp_geq((yyvsp[-2].pid), (yyvsp[0].pid), yylineno);    }
-#line 1539 "parser.tab.c"
+    { exp_geq((yyvsp[-2].temp), (yyvsp[0].temp), yylineno);    }
+#line 1542 "parser.tab.c"
     break;
 
   case 36:
 #line 107 "parser.y"
-    {value_num((yyvsp[0].pid), yylineno);       }
-#line 1545 "parser.tab.c"
+    { (yyval.temp)[0]=(yyvsp[0].pid);(yyval.temp)[1]=NULL;         }
+#line 1548 "parser.tab.c"
+    break;
+
+  case 37:
+#line 108 "parser.y"
+    { }
+#line 1554 "parser.tab.c"
     break;
 
   case 38:
 #line 111 "parser.y"
-    {identifier_pid((yyvsp[0].pid), yylineno);         }
-#line 1551 "parser.tab.c"
+    {(yyval.temp)[0]=(yyvsp[0].pid); (yyval.temp)[1]=NULL; identifier_pid((yyvsp[0].pid), yylineno);         }
+#line 1560 "parser.tab.c"
     break;
 
   case 39:
 #line 112 "parser.y"
-    {identifier_pid_pid((yyvsp[-3].pid), (yyvsp[-1].pid), yylineno); }
-#line 1557 "parser.tab.c"
+    {std::cout<<"przed"; (yyval.temp)[0]=(yyvsp[-3].pid); (yyval.temp)[1]=(yyvsp[-1].pid); identifier_pid_pid((yyvsp[-3].pid), (yyvsp[-1].pid), yylineno); std::cout<<"po";}
+#line 1566 "parser.tab.c"
     break;
 
   case 40:
 #line 113 "parser.y"
-    {identifier_pid_num((yyvsp[-3].pid), (yyvsp[-1].pid), yylineno); }
-#line 1563 "parser.tab.c"
+    {std::cout<<"przed"; (yyval.temp)[0]=(yyvsp[-3].pid); (yyval.temp)[1]=(yyvsp[-1].pid); identifier_pid_num((yyvsp[-3].pid), (yyvsp[-1].pid), yylineno); std::cout<<"po";}
+#line 1572 "parser.tab.c"
     break;
 
 
-#line 1567 "parser.tab.c"
+#line 1576 "parser.tab.c"
 
       default: break;
     }

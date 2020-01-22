@@ -112,7 +112,7 @@ void if_loop(int line){
     cond_flag flag = cond_flags.top();
     cond_flags.pop();
     string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +"\nJNEG " + to_string(k+2) + " #IF JUMP";
-    auto it = code.insert(code.begin()+flag.k_start-2, temp); 
+    auto it = code.insert(code.begin()+flag.k_start, temp); //THERE WAS flag.k_start+2 
     k+=2;
 }
 

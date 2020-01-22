@@ -1,6 +1,8 @@
 %{
 #include <iostream>
 #include <string>
+#include <string.h>
+#include <stdio.h>
 #include "logic.hpp"
 #include "operations.hpp"
 #include "loops.hpp"
@@ -20,6 +22,7 @@ const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 %union {
     char* pid;
     char* num;
+    char* temp[2];
 }
 
 
@@ -36,10 +39,10 @@ const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 %token <pid> num
 %token ADD
 
-%type <pid> value
-%type <pid> identifier
+%type <temp> value
+%type <temp> identifier
 %type <pid> condition;
-
+%type <pid> expression
 %left SUB
 %left MUL DIV MOD
 %%      
@@ -61,53 +64,53 @@ commands:       commands command
 ;
 
 
-command:        identifier  ASSIGN expression';'                                        {assign($1, yylineno);                  }
+command:        identifier  ASSIGN expression';'                                  { assign($1, yylineno);                }
 
-                | IF condition THEN commands                                            { if_else_loop(yylineno);               }                  
-                        ELSE commands ENDIF                                             { add_else(yylineno);                   }               
+                | IF condition THEN commands                                      { if_else_loop(yylineno);               }                  
+                        ELSE commands ENDIF                                       { add_else(yylineno);                   }               
 
                 | IF condition THEN                                  
-                        commands ENDIF                                                  { if_loop(yylineno);}             
+                        commands ENDIF                                            { if_loop(yylineno);}             
 
-                | WHILE  condition                                                      { loop_while(yylineno);                 }
-                        DO commands ENDWHILE                                            { end_loop_while(yylineno);             }           
+                | WHILE  condition                                                { loop_while(yylineno);                 }
+                        DO commands ENDWHILE                                     { end_loop_while(yylineno);             }           
 
-                | DO                                                                    { begin_do_while(yylineno);             }
-                    commands WHILE condition ENDDO                                      { end_do_while(yylineno);               }
+                | DO                                                             { begin_do_while(yylineno);             }
+                    commands WHILE condition ENDDO                               { end_do_while(yylineno);               }
 
-                | FOR pidentifier FROM value TO value                                   { loop_for($2, $4, $6, false, yylineno);}
-                        DO commands ENDFOR                                              { end_loop_for(yylineno);               }
+                | FOR pidentifier FROM value TO value                            { loop_for($2, $4[0], $6[0], false, yylineno);}
+                        DO commands ENDFOR                                       { end_loop_for(yylineno);               }
 
-                | FOR pidentifier FROM value DOWNTO value                               { loop_for($2, $4, $6, true, yylineno); }
-                        DO commands ENDFOR                                              { end_loop_for(yylineno);               }
+                | FOR pidentifier FROM value DOWNTO value                        { loop_for($2, $4[0], $6[0], true, yylineno); }
+                        DO commands ENDFOR                                       { end_loop_for(yylineno);               }
 
-                | READ identifier';'                                                    { read($2);   }
-                | WRITE value';'                                                        { write($2);  }
+                | READ identifier';'                                             { read($2);   }
+                | WRITE value';'                                                 { write($2);  }
 ;
 
-expression:     value                                                                   { }
-                | value ADD value                                                       { add($1, $3, yylineno); }
-                | value SUB value                                                       { sub($1, $3, yylineno); }
-                | value MUL value                                                       { mul($1, $3, yylineno); }
-                | value DIV value                                                       { div($1, $3, yylineno); }
-                | value MOD value                                                       { mod($1, $3, yylineno); }
+expression:     value                                                            { load_single_value($1); }
+                | value ADD value                                                { add($1, $3, yylineno); }
+                | value SUB value                                                { sub($1, $3, yylineno); }
+                | value MUL value                                                { mul($1, $3, yylineno); }
+                | value DIV value                                                { div($1, $3, yylineno); }
+                | value MOD value                                                { mod($1, $3, yylineno); }
 ;
 
-condition:      value EQ value                                                          { exp_eq($1, $3, yylineno);     }
-                | value NEQ value                                                       { exp_neq($1, $3, yylineno);    }
-                | value LE value                                                        { exp_le($1, $3, yylineno);     }
-                | value GE value                                                        { exp_ge($1, $3, yylineno);     }
-                | value LEQ value                                                       { exp_leq($1, $3, yylineno);    }
-                | value GEQ value                                                       { exp_geq($1, $3, yylineno);    }
+condition:      value EQ value                                                   { exp_eq($1, $3, yylineno);     }
+                | value NEQ value                                                { exp_neq($1, $3, yylineno);    }
+                | value LE value                                                 { exp_le($1, $3, yylineno);     }
+                | value GE value                                                 { exp_ge($1, $3, yylineno);     }
+                | value LEQ value                                                { exp_leq($1, $3, yylineno);    }
+                | value GEQ value                                                { exp_geq($1, $3, yylineno);    }
 ;
 
-value:          num                                                                     {value_num($1, yylineno);       }
-                | identifier                                                            
+value:          num                                                              { $$[0]=$1;$$[1]=NULL;         }
+                | identifier                                                     { }
 ;
 
-identifier:     pidentifier                                                             {identifier_pid($1, yylineno);         }
-                | pidentifier '(' pidentifier ')'                                       {identifier_pid_pid($1, $3, yylineno); }
-                | pidentifier '(' num ')'                                               {identifier_pid_num($1, $3, yylineno); }
+identifier:     pidentifier                                                      {$$[0]=$1; $$[1]=NULL; identifier_pid($1, yylineno);         }
+                | pidentifier '(' pidentifier ')'                                {std::cout<<"przed"; $$[0]=$1; $$[1]=$3; identifier_pid_pid($1, $3, yylineno); std::cout<<"po";}
+                | pidentifier '(' num ')'                                        {std::cout<<"przed"; $$[0]=$1; $$[1]=$3; identifier_pid_num($1, $3, yylineno); std::cout<<"po";}
 ;
 
 

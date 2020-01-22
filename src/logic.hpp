@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 #include <map>
+#include<stack>
 
 using namespace std;
 
@@ -16,27 +17,42 @@ struct var {
     string type;
     long long int value;
     long long int mem_addr;
-	bool initialized;
+	bool initialized=false;
 	long long int begin;
 	long long int size;
+};
+
+struct index{
+    char* name = NULL;
+    long long value;
+    char* arr_name;
 };
 
 extern map<string, var> variables;
 extern long long int free_mem_idx;
 extern long long int k;
 extern vector<string> code;
+//extern stack<index> indexes;
 
 void declaration(char* identifier, int line);
 
 void declaration(char* identifier, char* begining, char* end, int line);
 
-void assign(char* name, int line);
+void assign(char** name, int line);
 
-void read(char* name);
+void store_variable(char** name);
 
-void write(char* name);
+bool check_if_number(const std::string& s);
+
+void read(char** name);
+
+void write(char** name);
+
+void load_variable(char** name);
 
 void value_num(char* val, int line);
+
+void load_single_value(char** name);
 
 void generate_number(char* val);
 
