@@ -54,6 +54,8 @@ void value_num(char* val, int line);
 
 void load_single_value(char** name);
 
+void generate_shifters();
+
 void generate_number(char* val);
 
 void generate_number(long long int val);

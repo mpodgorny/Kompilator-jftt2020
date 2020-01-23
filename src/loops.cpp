@@ -6,25 +6,26 @@ using namespace std;
 stack<for_loop> for_loops;
 stack<while_loop> while_loops;
 
-void loop_for(char* it_name, char* iterator, char* to_value, bool downto, int line){
+void loop_for(char* it_name, char** iterator, char** to_value, bool downto, int line){
 
     for_loop new_loop;
     new_loop.name=it_name;
 
     
-    var original_it = variables.at(iterator);
+    //var original_it = variables.at(iterator);
     var it;
     it.mem_addr= free_mem_idx++;
     
-    add_code("LOAD", original_it.mem_addr);
-    add_code("STORE", it.mem_addr);
+    //add_code("LOAD", original_it.mem_addr);
+    load_single_value(iterator);
+    add_code("STORE", it.mem_addr, "#FOR_BEGINING");
 
     
-    var original_to_value_var = variables.at(to_value);
+    //var original_to_value_var = variables.at(to_value);
     var to_value_var;
     to_value_var.mem_addr=free_mem_idx++;
-    
-    add_code("LOAD", original_to_value_var.mem_addr);
+ //   add_code("LOAD", original_to_value_var.mem_addr);
+    load_single_value(to_value);
     add_code("STORE", to_value_var.mem_addr);
 
     if(downto){
@@ -35,7 +36,7 @@ void loop_for(char* it_name, char* iterator, char* to_value, bool downto, int li
         add_code("SUB", it.mem_addr);
     }
     new_loop.loop_end = k;
-    add_code("JNEG", k);
+    add_code("JNEG", k, " #SOMEHOW_END");
 
     variables.insert(make_pair(it_name, it));
     new_loop.iterator=it;
@@ -50,7 +51,7 @@ void loop_for(char* it_name, char* iterator, char* to_value, bool downto, int li
 void end_loop_for(int line){
     for_loop loop = for_loops.top();
     for_loops.pop();
-    add_code("LOAD", loop.iterator.mem_addr);
+    add_code("LOAD", loop.iterator.mem_addr, "# BEG_OF_END_FOR");
 
     if(loop.downto){
         add_code("DEC");
@@ -69,7 +70,7 @@ void end_loop_for(int line){
         add_code("JPOS", loop.j);
     }
     add_code("JZERO", loop.j);
-    code.at(loop.loop_end) = "JNEG " + to_string(k-1);
+    code.at(loop.loop_end) = "JNEG " + to_string(k-1) ;
     variables.erase(loop.name);
 }
 
@@ -88,7 +89,9 @@ void loop_while(int line){
 void end_loop_while(int line){
     while_loop loop = while_loops.top();
     while_loops.pop();
-    add_code("JUMP", loop.k_start, " #WHILE_END");
+    cond_flag flag = cond_flags.top();
+
+    add_code("JUMP", flag.expr_start, " #WHILE_END");
     code.at(loop.jneg_addr)="JNEG " + to_string(k);
     cond_flags.pop();
 }
@@ -111,44 +114,40 @@ void end_do_while(int line){
 void if_loop(int line){
     cond_flag flag = cond_flags.top();
     cond_flags.pop();
-    string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +"\nJNEG " + to_string(k+2) + " #IF JUMP";
-    auto it = code.insert(code.begin()+flag.k_start, temp); //THERE WAS flag.k_start+2 
-    k+=2;
+    //string temp = "LOAD "+ to_string(3) +" #IF LOOP INSERTED HERE" +"\nJNEG " + to_string(k+2) + " #IF JUMP";
+    
+    //auto it = code.insert(code.begin()+flag.k_start, temp); //THERE WAS flag.k_start+2 
+   // k+=2;
+    string tp1 = "LOAD " + to_string(flag.boolean.mem_addr) + " #IF BEGINING";
+    string tp2 = "JNEG " + to_string(k);
+    code.at(flag.k_start-2)=tp1;
+    code.at(flag.k_start-1)=tp2;
 }
 
 void if_else_loop(int line){
     cond_flag &flag = cond_flags.top();
 
-    string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +" #IF\nJNEG " + to_string(k+2) + " #IF_ELSE FIRST JUMP";
-    auto it = code.insert(code.begin()+flag.k_start, temp); 
-    k+=2;
+    // string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +" #IF\nJNEG " + to_string(k+2) + " #IF_ELSE FIRST JUMP";
+    // auto it = code.insert(code.begin()+flag.k_start, temp); 
+    // k+=2;
+    string tp1 = "LOAD " + to_string(flag.boolean.mem_addr) + " #IFELSEE BEGINING";
+    string tp2 = "JNEG " + to_string(k);
+
+    code.at(flag.k_start-2)=tp1;
+    code.at(flag.k_start-1)=tp2;
     flag.k_end=k;
+    add_code("INC #LOOP ACCESS <- SHOULD DISSAPEAR");
+    add_code("INC #LOOP ACCESS <- SHOULD DISSAPEAR");
 }
 
 void add_else(int line){
     cond_flag flag = cond_flags.top();
     cond_flags.pop();
-    string temp="LOAD "+ to_string(flag.boolean.mem_addr) + " # ELSE\nJPOS " + to_string(k+2) + " #jump if condition was true";
-    auto it = code.insert(code.begin()+flag.k_end-1, temp); 
-    k+=2;
+    string tp1="LOAD " + to_string(flag.boolean.mem_addr) + " #IF ELSE MIDDLE";
+    string tp2="JPOS " + to_string(k);
+    code.at(flag.k_end)=tp1;
+    code.at(flag.k_end+1)=tp2;
+    // string temp="LOAD "+ to_string(flag.boolean.mem_addr) + " # ELSE\nJPOS " + to_string(k+2) + " #jump if condition was true";
+    // auto it = code.insert(code.begin()+flag.k_end-1, temp); 
+    // k+=2;
 }
-
-/*
-void adjust_loops(int adj){
-    while_loop while_arr[while_loops.size];
-    for_loop for_arr[for_loops.size];
-    int it = 0;
-
-    while(!for_loops.empty){
-        for_loop loop = for_loops.top();
-        for_arr[it++];
-        for_loops.pop();
-    }
-    while(!while_loops.empty){
-        while_loop loop = while_loops.top();
-        while_arr[it++];
-        while_loops.pop();
-    }
-
-}
-*/

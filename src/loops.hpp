@@ -18,6 +18,7 @@ struct while_loop{
     int k_start;
     int k_end;
     int jneg_addr;
+    int expr_start;
 
 };
 
@@ -26,7 +27,7 @@ extern stack<while_loop> while_loops;
 
 
 
-void loop_for(char* it_name, char* iterator, char* to_value, bool downto, int line);    
+void loop_for(char* it_name, char** iterator, char** to_value, bool downto, int line);    
 
 void end_loop_for(int line);
 

@@ -12,7 +12,7 @@ long long int k=0;
 
 bool reg1_taken = false;
 
-long long int free_mem_idx=15;
+long long int free_mem_idx=18;
 
 bool debug = true;
 
@@ -73,7 +73,7 @@ void store_variable(char* name[]){
         add_code("STOREI", 5, " #STORE_VAR_END"); // STOREI IT! :)
     
     }else{
-        add_code("STORE", variable.mem_addr, " # re-assigning");
+        add_code("STORE", variable.mem_addr, " # ASSIGNING ");
     }
 
 }
@@ -99,7 +99,6 @@ void read(char** name){
 void write(char** name){
     load_single_value(name);
     add_code("PUT");
-    cout<<" >>>>>>>"<<name[0];
 
 }
 
@@ -168,6 +167,15 @@ void generate_number(long long int val){
     }
     }
 
+}
+
+void generate_shifters(){
+    add_code("SUB", 0, " #SHIFTERS_BEG");
+    add_code("INC");
+    add_code("STORE", 1);
+    add_code("SUB", 0);
+    add_code("DEC");
+    add_code("STORE", 2, " #SHIFTERS_END");
 }
 
 void identifier_pid(char* name, int line){

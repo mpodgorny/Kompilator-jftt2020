@@ -34,8 +34,8 @@
 /* Undocumented macros, especially those whose name start with YY_,
    are private implementation details.  Do not rely on them.  */
 
-#ifndef YY_YY_PARSER_TAB_H_INCLUDED
-# define YY_YY_PARSER_TAB_H_INCLUDED
+#ifndef YY_YY_PARSER_HH_INCLUDED
+# define YY_YY_PARSER_HH_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -49,56 +49,18 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    DECLARE = 258,
-    T_BEGIN = 259,
-    END = 260,
-    IF = 261,
-    WHILE = 262,
-    DO = 263,
-    FOR = 264,
-    THEN = 265,
-    ELSE = 266,
-    ENDIF = 267,
-    FROM = 268,
-    TO = 269,
-    DOWNTO = 270,
-    ENDFOR = 271,
-    ENDWHILE = 272,
-    ENDDO = 273,
-    READ = 274,
-    WRITE = 275,
-    LE = 276,
-    GE = 277,
-    LEQ = 278,
-    GEQ = 279,
-    EQ = 280,
-    NEQ = 281,
-    ASSIGN = 282,
-    ERROR = 283,
-    pidentifier = 284,
-    num = 285,
-    ADD = 286,
-    SUB = 287,
-    MUL = 288,
-    DIV = 289,
-    MOD = 290
+    COM_0 = 258,
+    COM_1 = 259,
+    JUMP_1 = 260,
+    STOP = 261,
+    LABEL = 262,
+    ERROR = 263
   };
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 21 "parser.y"
-
-    char* pid;
-    char* num;
-    char* temp[2];
-
-#line 99 "parser.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -106,6 +68,6 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE yylval;
 
-int yyparse (void);
+int yyparse (std::vector< std::pair<int,long long> > & program);
 
-#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_HH_INCLUDED  */

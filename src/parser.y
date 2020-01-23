@@ -16,7 +16,6 @@ extern int yylineno;
 
 const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 
-
 %}
 
 %union {
@@ -69,7 +68,7 @@ command:        identifier  ASSIGN expression';'                                
                 | IF condition THEN commands                                      { if_else_loop(yylineno);               }                  
                         ELSE commands ENDIF                                       { add_else(yylineno);                   }               
 
-                | IF condition THEN                                  
+                | IF condition THEN                                                     
                         commands ENDIF                                            { if_loop(yylineno);}             
 
                 | WHILE  condition                                                { loop_while(yylineno);                 }
@@ -78,10 +77,10 @@ command:        identifier  ASSIGN expression';'                                
                 | DO                                                             { begin_do_while(yylineno);             }
                     commands WHILE condition ENDDO                               { end_do_while(yylineno);               }
 
-                | FOR pidentifier FROM value TO value                            { loop_for($2, $4[0], $6[0], false, yylineno);}
+                | FOR pidentifier FROM value TO value                            { loop_for($2, $4, $6, false, yylineno);}
                         DO commands ENDFOR                                       { end_loop_for(yylineno);               }
 
-                | FOR pidentifier FROM value DOWNTO value                        { loop_for($2, $4[0], $6[0], true, yylineno); }
+                | FOR pidentifier FROM value DOWNTO value                        { loop_for($2, $4, $6, true, yylineno); }
                         DO commands ENDFOR                                       { end_loop_for(yylineno);               }
 
                 | READ identifier';'                                             { read($2);   }
@@ -109,8 +108,8 @@ value:          num                                                             
 ;
 
 identifier:     pidentifier                                                      {$$[0]=$1; $$[1]=NULL; identifier_pid($1, yylineno);         }
-                | pidentifier '(' pidentifier ')'                                {std::cout<<"przed"; $$[0]=$1; $$[1]=$3; identifier_pid_pid($1, $3, yylineno); std::cout<<"po";}
-                | pidentifier '(' num ')'                                        {std::cout<<"przed"; $$[0]=$1; $$[1]=$3; identifier_pid_num($1, $3, yylineno); std::cout<<"po";}
+                | pidentifier '(' pidentifier ')'                                {$$[0]=$1; $$[1]=$3; identifier_pid_pid($1, $3, yylineno);}
+                | pidentifier '(' num ')'                                        {$$[0]=$1; $$[1]=$3; identifier_pid_num($1, $3, yylineno);}
 ;
 
 
@@ -119,7 +118,7 @@ identifier:     pidentifier                                                     
 
 int main(int argc, char* argv[]) {
         
-                                     
+        
                 std::cout<<"\t|/  _  ._ _  ._  o |  _. _|_  _  ._ "<<std::endl;
                 std::cout<<"\t|\\ (_) | | | |_) | | (_|  |_ (_) |  "<<std::endl;
                 std::cout<<"\t             |                       "<<std::endl;
@@ -132,9 +131,11 @@ int main(int argc, char* argv[]) {
         
         yyin = fopen(argv[1], "r");
         
-        if (yyin == NULL)
+        if (yyin == NULL){
                 std::cout<<"Given input fie was not found.\nAborting...";
-        
+                exit(-1);
+        }
+        generate_shifters();
         yyparse();
         std::cout<<"\t \033[;36m------------SUCCES------------\n\033[;0m";
         save_to_file(argv[2]);

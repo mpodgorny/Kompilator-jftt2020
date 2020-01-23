@@ -6,6 +6,7 @@ using namespace std;
 struct cond_flag{
     int k_start;
     int k_end;
+    int expr_start;
     var boolean;
 };
 
