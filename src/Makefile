@@ -1,5 +1,5 @@
 CC = g++
-FLAGS = -std=c++17 -g
+FLAGS = -std=c++17
 
 all: compiler
 

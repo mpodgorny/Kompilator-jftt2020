@@ -10,21 +10,15 @@ void loop_for(char* it_name, char** iterator, char** to_value, bool downto, int 
 
     for_loop new_loop;
     new_loop.name=it_name;
-
-    
-    //var original_it = variables.at(iterator);
     var it;
     it.mem_addr= free_mem_idx++;
     
-    //add_code("LOAD", original_it.mem_addr);
     load_single_value(iterator);
     add_code("STORE", it.mem_addr, "#FOR_BEGINING");
 
-    
-    //var original_to_value_var = variables.at(to_value);
     var to_value_var;
     to_value_var.mem_addr=free_mem_idx++;
- //   add_code("LOAD", original_to_value_var.mem_addr);
+    
     load_single_value(to_value);
     add_code("STORE", to_value_var.mem_addr);
 
@@ -114,10 +108,7 @@ void end_do_while(int line){
 void if_loop(int line){
     cond_flag flag = cond_flags.top();
     cond_flags.pop();
-    //string temp = "LOAD "+ to_string(3) +" #IF LOOP INSERTED HERE" +"\nJNEG " + to_string(k+2) + " #IF JUMP";
-    
-    //auto it = code.insert(code.begin()+flag.k_start, temp); //THERE WAS flag.k_start+2 
-   // k+=2;
+
     string tp1 = "LOAD " + to_string(flag.boolean.mem_addr) + " #IF BEGINING";
     string tp2 = "JNEG " + to_string(k);
     code.at(flag.k_start-2)=tp1;
@@ -127,9 +118,6 @@ void if_loop(int line){
 void if_else_loop(int line){
     cond_flag &flag = cond_flags.top();
 
-    // string temp = "LOAD "+ to_string(flag.boolean.mem_addr) +" #IF\nJNEG " + to_string(k+2) + " #IF_ELSE FIRST JUMP";
-    // auto it = code.insert(code.begin()+flag.k_start, temp); 
-    // k+=2;
     string tp1 = "LOAD " + to_string(flag.boolean.mem_addr) + " #IFELSEE BEGINING";
     string tp2 = "JNEG " + to_string(k);
 
@@ -147,7 +135,5 @@ void add_else(int line){
     string tp2="JPOS " + to_string(k);
     code.at(flag.k_end)=tp1;
     code.at(flag.k_end+1)=tp2;
-    // string temp="LOAD "+ to_string(flag.boolean.mem_addr) + " # ELSE\nJPOS " + to_string(k+2) + " #jump if condition was true";
-    // auto it = code.insert(code.begin()+flag.k_end-1, temp); 
-    // k+=2;
+
 }

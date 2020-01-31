@@ -14,7 +14,6 @@ void yyerror(char const *s);
 extern FILE *yyin;
 extern int yylineno;
 
-const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 
 %}
 
@@ -40,7 +39,7 @@ const std::string error_alert = "\x1b[31merror\x1b[0m: ";
 
 %type <temp> value
 %type <temp> identifier
-%type <pid> condition;
+%type <pid> condition
 %type <pid> expression
 %left SUB
 %left MUL DIV MOD
@@ -119,32 +118,33 @@ identifier:     pidentifier                                                     
 int main(int argc, char* argv[]) {
         
         
-                std::cout<<"\t|/  _  ._ _  ._  o |  _. _|_  _  ._ "<<std::endl;
+                std::cout<<"\n\n\t|/  _  ._ _  ._  o |  _. _|_  _  ._ "<<std::endl;
                 std::cout<<"\t|\\ (_) | | | |_) | | (_|  |_ (_) |  "<<std::endl;
                 std::cout<<"\t             |                       "<<std::endl;
 
 
-        std::cout << "\t\t\033[;36m By Michał Podgórny" << std::endl;
-        std::cout<< "\t\033[;32m------------Compiling------------" << std::endl;
-        if(argc != 3)
-                std::cout<<"Usage: ./compiler <input_file> <output.file>\nAborting...";
+        std::cout << "\t\t\033[;36m By Michał Podgórny\n" << std::endl;
+        if(argc != 3){
+                std::cout<<"\x1b[31mUsage: ./compiler <input_file> <output.file>\nAborting...\n";
         
-        yyin = fopen(argv[1], "r");
-        
-        if (yyin == NULL){
-                std::cout<<"Given input fie was not found.\nAborting...";
-                exit(-1);
+        } else{
+                yyin = fopen(argv[1], "r");
+                if (yyin == NULL){
+                        std::cout<<"\x1b[31mGiven input fie was not found.\nAborting...\n";
+                        std::exit(1);
+                        
+                } else{
+                std::cout<< "\t\033[;32m------------Compiling------------" << std::endl;
+                generate_shifters();
+                yyparse();
+                std::cout<<"\t \033[;32m------------SUCCES------------\n\033[;0m";
+                save_to_file(argv[2]);
+                return 0;
+                }
         }
-        generate_shifters();
-        yyparse();
-        std::cout<<"\t \033[;36m------------SUCCES------------\n\033[;0m";
-        save_to_file(argv[2]);
-        return 0;
-
 }
 
 void yyerror(char const *s) {
-        std::cerr << error_alert << s << " - unrecognized token (line " << yylineno << ")" << std::endl;
-        std::cerr << "### \x1b[31mErrors occured\x1b[0m ###" << std::endl;
+        std::cerr <<"\x1b[31munrecognized token line " << yylineno << "\nAborting...\n"<< std::endl;
         exit(0);
 }

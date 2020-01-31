@@ -3,21 +3,15 @@ using namespace std;
 
 vector<string> code;
 map<string, var> variables;
-map<string, var> arrays;
-stack<index> indexes;
 
-map<int, long long int> consts;
-
+//holds current instruction number; increments automaticly on add_code
 long long int k=0;
 
-bool reg1_taken = false;
-
+//holds current free memory address
 long long int free_mem_idx=18;
 
-bool debug = true;
 
 // TYPES: single, array, iterator
-
 void declaration(char* identifier, int line){
     if (variables.find(identifier) != variables.end())
             error("variable already declared, bro", line);
@@ -29,11 +23,13 @@ void declaration(char* identifier, int line){
 
 void declaration(char* identifier, char* begining, char* end, int line){
     if (variables.find(identifier) != variables.end())
-            error("variable already declared, bro", line);
+            error("variable already declared", line);
     if(stoll(begining)>stoll(end))
         error("array's end smaller than begining index", line);
     var temp;
     temp.type="array";
+    temp.begin=stoll(begining);
+    temp.end=stoll(end);
     temp.mem_addr=free_mem_idx++;
     temp.size= stoll(end) - stoll(begining)+1;
     free_mem_idx+=temp.size; //address reservation
@@ -139,8 +135,8 @@ void generate_number(char* val){
 }
 
 void generate_number(long long int val){
+    add_code("SUB", 0);
     if(val>=0){
-        add_code("SUB", 0);
         if (val < 10) {
         for (long long int i = 0; i < val; ++i) {
             add_code("INC");
@@ -153,7 +149,6 @@ void generate_number(long long int val){
         }
     }
     } else {
-        add_code("SUB", 0);
         if (val > -10) {
         for (long long int i = 0; i < abs(val); ++i) {
             add_code("DEC");
@@ -182,6 +177,7 @@ void identifier_pid(char* name, int line){
     if (variables.find(name) == variables.end())
         error("The variable has not been declared:", line);
 
+
 }
 
 void identifier_pid_pid(char* name, char* idx, int line){
@@ -189,16 +185,19 @@ void identifier_pid_pid(char* name, char* idx, int line){
         error("The variable has not been declared:", line);
     if (variables.find(idx) == variables.end())
         error("The variable has not been declared:", line);
-    // index index;
-    // index.arr_name=name;
-    // index.name=idx;
-    // indexes.push(index);
-    // cout<<"idx_str_added:"<<idx<<endl;
+
 }
 
 void identifier_pid_num(char* name, char* idx, int line){
     if (variables.find(name) == variables.end())
         error("The variable has not been declared:", line);
+    var &searched = variables.at(name);
+    if (searched.type != "array"){
+        error("Variable is not an array", line);
+    }
+    if (searched.begin > stoll(idx) || searched.end < stoll(idx)){
+        error("Constant index is out of range", line);
+    }
 }
 
 /*
@@ -233,8 +232,8 @@ void save_to_file(char* out) {
 }
 
 void error(string msg, int line){
-    cout<<"Error in line: "<<line<<": "<<msg<<endl;
-    exit(-1);
+    cout<<"\x1b[31mError in line: "<<line<<": "<<msg<<"\nAborting...\n"<<endl;
+    exit(1);
 }
 
 void end() {

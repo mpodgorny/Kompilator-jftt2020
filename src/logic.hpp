@@ -19,6 +19,7 @@ struct var {
     long long int mem_addr;
 	bool initialized=false;
 	long long int begin;
+	long long int end;
 	long long int size;
 };
 
