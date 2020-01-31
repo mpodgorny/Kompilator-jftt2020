@@ -108,9 +108,7 @@ void load_variable(char** name){
             var found_index = variables.at(name[1]);    
             add_code("LOAD", found_index.mem_addr);             //load index value
             add_code("STORE", 6);                   //store it mem=6
-        }    
-        //Now we have: 
-        //value to store at 4, index of array at 6         
+        }        
         add_code("LOAD", variable.mem_addr); //load relative index of array
         add_code("ADD", 6);   //add wanted index
         add_code("STORE", 5); // storing absolute index

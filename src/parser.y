@@ -26,8 +26,8 @@ extern int yylineno;
 
 %start program
 %token DECLARE T_BEGIN END
-%token <pid> IF WHILE DO
-%token <pid> FOR 
+%token IF WHILE DO
+%token FOR 
 %token THEN ELSE ENDIF FROM TO DOWNTO ENDFOR ENDWHILE ENDDO
 %token READ WRITE       
 %token LE GE LEQ GEQ EQ NEQ

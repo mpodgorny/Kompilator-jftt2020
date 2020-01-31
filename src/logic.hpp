@@ -23,17 +23,10 @@ struct var {
 	long long int size;
 };
 
-struct index{
-    char* name = NULL;
-    long long value;
-    char* arr_name;
-};
-
 extern map<string, var> variables;
 extern long long int free_mem_idx;
 extern long long int k;
 extern vector<string> code;
-//extern stack<index> indexes;
 
 void declaration(char* identifier, int line);
 

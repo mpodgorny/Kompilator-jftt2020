@@ -1,10 +1,10 @@
 CC = g++
 FLAGS = -std=c++17
 
-all: compiler
+all: kompilator
 
-compiler: parser.o lexer.o logic.o operations.o conditions.o loops.o
-	$(CC) $(FLAGS) -o compiler parser.o lexer.o logic.o operations.o conditions.o loops.o
+kompilator: parser.o lexer.o logic.o operations.o conditions.o loops.o
+	$(CC) $(FLAGS) -o kompilator parser.o lexer.o logic.o operations.o conditions.o loops.o
 
 loops.o: loops.cpp
 	$(CC) $(FLAGS) -c loops.cpp
@@ -32,4 +32,4 @@ parser.tab.c: parser.y
 
 clean:
 	rm -f *.o *~ *.c *.tab.c *.tab.h
-	rm -f compiler
+	rm -f kompilator

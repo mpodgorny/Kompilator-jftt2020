@@ -1,0 +1,28 @@
+Michał Podgórny 245683
+Kompilator 2020
+
+Język: C++ (std=c++17)
+
+Pliki:
+logic.cpp/hpp:
+Kod do operacji ASSIGN, WRITE, READ, a także deklaracji (sprawdzanie ich poprawności)
+i cała logika za nimi stojaca (opierająca się na strukturze var i mapie variables)
+Zawiera również funkcje do dodawania kodu, rzucania błędu oraz zapisu do pliku.
+
+loops.cpp/hpp:
+Kod obsługujący pętle. Opiera się na strukturach for_loop oraz while_loop a także pobranej
+ze stosu strukturze cond_flag.
+
+operations.cpp/hpp:
+Kod obsługujący działania arytmetyczne.
+
+conditions.cpp/hpp:
+Kod obsługujący warunki (==,!=,itp.); opiera się na strukturze cond_flag zapisującej początek i koniec kodu 
+sprawdzającego warunek, oraz stosu tej struktury (pętle oraz if pobiera tą wartość)
+
+Kompilacja:
+$: make
+
+Użycie kompilatora (zgodnie ze specyfikacją):
+
+kompilator <nazwa pliku wejściowego> <nazwa pliku wyjściowego>
